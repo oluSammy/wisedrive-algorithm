@@ -31,12 +31,13 @@ const vehicleMatching = (inputPath, vehicleType, position, outputPath) => {
     terminal: false,
   });
 
+  // read csv file line by line
   rl.on("line", (line) => {
-    const newLine = JSON.parse(JSON.stringify(line));
-    const lineArray = newLine.split(",");
-    if (vehicleType === modifyVehicleType(lineArray[position])) {
-      console.log(lineArray[0]);
+    const newLine = JSON.parse(JSON.stringify(line));   // stringify line
+    const lineArray = newLine.split(",");   // change line to array
 
+    // check if typeName or model is equal to the id passed
+    if (vehicleType === modifyVehicleType(lineArray[position])) {
       fs.appendFileSync(outputPath, `${lineArray[0]}\n`);
     }
   });
@@ -55,4 +56,4 @@ const matchVehicleToId = (id) => {
   vehicleMatching(vehicleTypePath, newVehicleType, 4, outputPath);
 };
 
-matchVehicleToId("535 d xDrive");
+matchVehicleToId("525 d");
