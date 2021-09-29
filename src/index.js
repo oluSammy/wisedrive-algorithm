@@ -60,6 +60,7 @@ const getVehicleIds = (matchedCars) => {
 
   let result = [];
 
+  // loop through array of matched cars
   matchedCars.forEach((matchedVehicle) => {
     const vehicleData = matchedVehicle.split(",");
     let modelId = modifyVehicleType(vehicleData[2]);
@@ -106,14 +107,24 @@ const getVehicleIds = (matchedCars) => {
  *
  * @param {string}
  */
-const algo = (carId) => {
-  const matchedCars = getVehicleBmw(carId);
+const matchCarIdToModel = (carId) => {
+  let id = carId || process.argv2;
+  const matchedCars = getVehicleBmw(id);
   const results = getVehicleIds(matchedCars);
 
   console.log({
-    model: carId,
+    model: id,
     ids: results,
   });
+  return {
+    model: id,
+    ids: results,
+  };
 };
 
-algo("X3 XDRIVE 20I");
+matchCarIdToModel("X3 XDRIVE 20I");
+
+module.exports = {
+  modifyVehicleType,
+  matchCarIdToModel,
+};

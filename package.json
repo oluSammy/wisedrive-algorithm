@@ -4,5 +4,12 @@
   "description": "Algorithm  to implement a vehicle matching algorithm in Node.js that finds the car id's (one or many) of the vehicle types.",
   "main": "index.js",
   "author": "Olumorin Samuel",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "matchCars": "node src/index.js"
+  },
+  "devDependencies": {
+    "jest": "^27.2.4"
+  }
 }
