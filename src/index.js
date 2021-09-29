@@ -15,45 +15,105 @@ const modifyVehicleType = (vehicleType) => {
 };
 
 /**
- * function that
- * @param {string} path -- path to csv file
- * @param {string} vehicleType -- vehicle Type
- * @param {number} position -- position of id on line
- * @param {string} outputPath -- path to write the output ids
+ * functions converts string to date
+ * @param {string} str
+ * @returns {date} date
  */
+const getConstructionDate = (str) => {
+  if (!str.length) return new Date(Date.now());
 
-const vehicleMatching = (inputPath, vehicleType, position, outputPath) => {
-  const ReadableStream = fs.createReadStream(inputPath, "utf-8");
+  const year = str.slice(0, 4);
+  const month = str.slice(4);
 
-  const rl = readline.createInterface({
-    input: ReadableStream,
-    output: process.stdout,
-    terminal: false,
+  const date = new Date(`${year}-${month}-01`);
+
+  return date;
+};
+
+/**
+ *
+ * @param {string} model
+ * @returns array of matched cars
+ */
+const getVehicleBmw = (model) => {
+  // read vehicle bmw file
+  const data = fs.readFileSync(vehicleBmwPath, "utf-8");
+
+  const dataArray = data.split("\n"); // split file by next line
+
+  const matchedVehicles = dataArray.filter(
+    (carRecord) => carRecord.split(",")[2] === model
+  );
+  return matchedVehicles;
+};
+
+/**
+ *
+ * @param {array} matchedCars -- array of matched vehicles
+ * @returns array of car ids
+ */
+const getVehicleIds = (matchedCars) => {
+  const data = fs.readFileSync(vehicleTypePath, "utf-8");
+
+  const dataArray = data.split("\n");
+  dataArray.shift();
+
+  let result = [];
+
+  matchedCars.forEach((matchedVehicle) => {
+    const vehicleData = matchedVehicle.split(",");
+    let modelId = modifyVehicleType(vehicleData[2]);
+    regDate = new Date(vehicleData[3]).getTime();
+    const modelName = vehicleData[2].split(" ");
+    const shortModelName = modelName.shift();
+    const longModelName = modifyVehicleType(modelName.join(""));
+
+    const filteredData = dataArray.filter((vehicleType) => {
+      const vehicleTypeArr = vehicleType.split(",");
+      const typeName = modifyVehicleType(
+        vehicleTypeArr[4].split("\r").join("")
+      );
+      const id = modifyVehicleType(modelId);
+      const fromDate = getConstructionDate(vehicleTypeArr[1]).getTime();
+      const toDate = getConstructionDate(vehicleTypeArr[2]).getTime();
+
+      if (modelId.startsWith("x")) {
+        const modelType = vehicleTypeArr[3];
+
+        if (
+          modelType.startsWith(shortModelName) &&
+          longModelName === typeName &&
+          regDate >= fromDate &&
+          regDate <= toDate
+        ) {
+          return vehicleType;
+        }
+      } else {
+        if (id === typeName) {
+          if (regDate >= fromDate && regDate <= toDate) {
+            return vehicleType;
+          }
+        }
+      }
+    });
+    result = filteredData.map((car) => car.split(",")[0]);
   });
 
-  // read csv file line by line
-  rl.on("line", (line) => {
-    const newLine = JSON.parse(JSON.stringify(line));   // stringify line
-    const lineArray = newLine.split(",");   // change line to array
+  return result;
+};
 
-    // check if typeName or model is equal to the id passed
-    if (vehicleType === modifyVehicleType(lineArray[position])) {
-      fs.appendFileSync(outputPath, `${lineArray[0]}\n`);
-    }
+/**
+ *
+ * @param {string}
+ */
+const algo = (carId) => {
+  const matchedCars = getVehicleBmw(carId);
+  const results = getVehicleIds(matchedCars);
+
+  console.log({
+    model: carId,
+    ids: results,
   });
 };
 
-const matchVehicleToId = (id) => {
-  const newVehicleType = modifyVehicleType(id);
-  const outputPath = path.join(__dirname, `./output/${newVehicleType}_IDS.csv`);
-
-  // delete file if it exists
-  if (fs.existsSync(outputPath)) {
-    fs.unlinkSync(outputPath);
-  }
-
-  vehicleMatching(vehicleBmwPath, newVehicleType, 2, outputPath);
-  vehicleMatching(vehicleTypePath, newVehicleType, 4, outputPath);
-};
-
-matchVehicleToId("525 d");
+algo("X3 XDRIVE 20I");
