@@ -18,7 +18,7 @@ e.g yarn matchCars "X3 XDRIVE 20I"
 ### Run tests
 
 ```
-yarn test "model"
+yarn test
 ```
 
 ### Customize configuration
