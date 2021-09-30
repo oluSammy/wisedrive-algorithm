@@ -107,8 +107,8 @@ const getVehicleIds = (matchedCars) => {
  *
  * @param {string}
  */
-const matchCarIdToModel = (carId) => {
-  let id = carId || process.argv2;
+const matchCarTypeToID = (carType) => {
+  let id = process.argv[2] || carType;
   const matchedCars = getVehicleBmw(id);
   const results = getVehicleIds(matchedCars);
 
@@ -122,9 +122,9 @@ const matchCarIdToModel = (carId) => {
   };
 };
 
-matchCarIdToModel("X3 XDRIVE 20I");
+matchCarTypeToID("X3 XDRIVE 20I");
 
 module.exports = {
   modifyVehicleType,
-  matchCarIdToModel,
+  matchCarTypeToID,
 };
